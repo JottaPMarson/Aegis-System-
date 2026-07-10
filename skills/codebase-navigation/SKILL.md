@@ -10,7 +10,7 @@ Use first when asking: "what calls this function", "what breaks if I change X", 
 
 Tools: `graph_search`, `graph_impact`, `graph_path`, `graph_explain`, `graph_hotspots`.
 
-In Claude Code, Graphify's own `PreToolUse` hook intercepts `Read`/`Glob`/search calls and redirects to the graph — this happens automatically when Graphify is installed and running.
+Graphify is invoked manually via `/graphify .` inside Claude Code — it does not install any automatic hook. Run it before starting structural analysis, then query the graph with `graph_search`, `graph_impact`, `graph_path`, `graph_explain`.
 
 **If Graphify is not available**: skip to step 2 and note the gap.
 

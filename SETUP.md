@@ -51,56 +51,98 @@ From the Aegis repo root:
 claude plugin install .
 ```
 
-### 2. Install recommended MCPs
+### 2. Install recommended tools
 
-Aegis works best with four MCPs. Two you may already have; two are optional but unlock the full navigation order (Graphify → Lumen → Serena → Read).
+Aegis works best with four tools. Install each independently — they have separate lifecycles.
 
 #### Serena (code read/edit by symbol via LSP)
 
+**Prerequisite:** [`uv`](https://docs.astral.sh/uv/getting-started/installation/) must be installed first.
+
 ```bash
-claude mcp add serena -- uvx --from serena serena-language-server --context-window-tokens 40000
+# 1. Install Serena
+uv tool install -p 3.13 serena-agent
+
+# 2. Register with Claude Code (automatic setup)
+serena setup claude-code
 ```
+
+If you prefer to register manually:
+
+```bash
+claude mcp add --scope user serena -- serena start-mcp-server --context claude-code --project-from-cwd
+```
+
+> **Note:** Do not install Serena via a Claude Code plugin marketplace — those entries are outdated. Use the commands above.
 
 Verify: `claude mcp list` should show `serena` as active.
 
 #### Lumen (semantic search by meaning)
 
-```bash
-claude mcp add lumen -- npx @ory/lumen-mcp
-```
-
-After installing, index your project:
+Lumen is a **Claude Code plugin** (not a standalone MCP). It requires [Ollama](https://ollama.com) running locally with an embedding model.
 
 ```bash
-# Inside your project directory:
-npx @ory/lumen index
+# 1. Install Ollama and pull the embedding model
+ollama pull ordis/jina-embeddings-v2-base-code
 ```
+
+Then inside a Claude Code session, run these slash commands:
+
+```
+/plugin marketplace add ory/claude-plugins
+/plugin install lumen@ory
+```
+
+Lumen indexes your project automatically on the first session start — no manual index step needed. To force a re-index: `/lumen:reindex`.
 
 Verify: run `/lumen:doctor` inside Claude Code to confirm the index is active.
 
 #### Graphify (code structure graph — first stop for impact questions)
 
-See [https://github.com/Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) for installation steps.
+**Prerequisite:** Python 3.10 or later.
 
-Graphify installs its own `PreToolUse` hook that automatically redirects `Read`/`Glob` calls to the graph when it is running.
+```bash
+pip install graphifyy && graphify install
+```
 
-**Known limitation**: Graphify caches `graph.json` at startup. Use `--watch` mode or configure a `post-commit` hook to keep the graph current. Validate graph freshness before trusting structural answers.
+To analyze a project, run `/graphify .` inside Claude Code. Graphify does **not** install any automatic hook — it is invoked manually via the slash command.
 
-#### drawio-mcp-server (diagram generation — used by architect agent)
+To keep the graph current after commits:
 
-See [https://www.drawio.com/docs/manual/generate/drawio-mcp-server/](https://www.drawio.com/docs/manual/generate/drawio-mcp-server/) for installation steps.
+```bash
+graphify hook install   # installs a git post-commit hook
+# or use watch mode:
+graphify ./raw --watch
+```
+
+**Known limitation**: Graphify caches `graph.json` at startup. Use `--watch` or the post-commit hook to keep the graph current. Validate graph freshness before trusting structural answers.
+
+#### drawio (diagram generation — used by architect agent)
+
+drawio is also a **Claude Code plugin**. Inside a Claude Code session:
+
+```
+/plugin marketplace add jgraph/drawio-mcp
+/plugin install drawio@drawio
+```
 
 ---
 
 ### 3. Verify
 
-Check which MCPs are active:
+Check MCP servers (Serena appears here):
 
 ```bash
 claude mcp list
 ```
 
-Run the full health check at any time:
+Check installed plugins (Lumen and drawio appear here):
+
+```bash
+claude plugin list
+```
+
+Run the full Aegis health check at any time:
 
 ```bash
 bash scripts/doctor.sh
@@ -114,8 +156,8 @@ The `skills/codebase-navigation/SKILL.md` formalizes this, but here is the summa
 
 | Order | MCP | Use for |
 |---|---|---|
-| 1 | Graphify | Structure/impact questions ("what calls this", "what breaks if I change X") |
-| 2 | Lumen | Location by meaning ("where is the code that does X") |
+| 1 | Graphify | Structure/impact questions ("what calls this", "what breaks if I change X") — invoke via `/graphify .` |
+| 2 | Lumen | Location by meaning ("where is the code that does X") — `mcp__lumen__semantic_search` |
 | 3 | Serena | Precise symbol read/edit once you know where to look |
 | 4 | Read (raw) | Last resort — file outside indexed scope, or path already confirmed |
 

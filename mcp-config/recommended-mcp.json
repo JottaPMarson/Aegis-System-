@@ -24,12 +24,12 @@
       "navigation_order": 2
     },
     "graphify": {
-      "purpose": "Knowledge graph of code structure (AST + semantic analysis). First stop for structure/impact questions. Installs a PreToolUse hook that redirects Read/Glob to the graph automatically when running.",
+      "purpose": "Knowledge graph of code structure (AST + semantic analysis). First stop for structure/impact questions. Invoked manually via /graphify . inside Claude Code — does not install any automatic hook.",
       "repo": "https://github.com/Graphify-Labs/graphify",
-      "install_hint": "See https://github.com/Graphify-Labs/graphify for installation steps — Graphify installs its own Claude Code hook.",
+      "install_hint": "pip install graphifyy && graphify install — then run /graphify . inside Claude Code to analyze a project.",
       "used_by": ["architect", "security-reviewer", "database-engineer"],
       "navigation_order": 1,
-      "known_limitation": "Caches graph.json at startup. Use --watch mode or a post-commit hook to keep the graph current. Validate graph freshness before trusting structural answers (Phase 4 validation item)."
+      "known_limitation": "Caches graph.json at startup. Use --watch mode (graphify ./raw --watch) or install a post-commit hook (graphify hook install) to keep the graph current. Validate graph freshness before trusting structural answers."
     },
     "drawio-mcp-server": {
       "purpose": "Generate and edit .drawio diagrams programmatically (C4, sequence, infrastructure diagrams). Used exclusively by the architect agent.",
