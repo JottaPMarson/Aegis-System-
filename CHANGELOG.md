@@ -4,6 +4,11 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 
 ## [Unreleased]
 
+### Added
+
+- `LICENSE` — PolyForm NonCommercial License 1.0.0: free for personal, research, education, and non-profit use; commercial use prohibited
+- Branch protection on `main`: PR review required, linear history, no force pushes, no deletions, conversation resolution required, signed commits required
+
 ### Fixed
 
 - `scripts/doctor.sh` — section 4 (hooks) always reported "not found" due to a double `python3` heredoc call: the heredoc was consumed by the `if` condition, leaving the second call without a script; restructured to a single call with captured output
