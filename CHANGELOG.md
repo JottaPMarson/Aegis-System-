@@ -4,6 +4,21 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 
 ## [Unreleased]
 
+### Fixed
+
+- `scripts/doctor.sh` — section 4 (hooks) always reported "not found" due to a double `python3` heredoc call: the heredoc was consumed by the `if` condition, leaving the second call without a script; restructured to a single call with captured output
+- `docs/architecture/AEGIS-ARCHITECTURE.md §8.1` — hook decision value corrected from `ask` to `block` (with JSON stdout); clarified `AEGIS_ALLOW=1` override mechanism
+- `docs/architecture/AEGIS-ARCHITECTURE.md §8.3` — replaced stale `.sh` filenames with the actual `.py` guard scripts; noted Phase 2 patterns as planned-but-not-implemented
+- `docs/architecture/AEGIS-ARCHITECTURE.md §8.4` — clarified that `dangerous-patterns.md` is human reference only, not parsed at runtime by hook scripts
+
+### Added
+
+- `rules/cpp/frameworks/`, `rules/go/frameworks/`, `rules/rust/frameworks/` — placeholder dirs now consistent with all other language rules directories
+
+### Removed
+
+- `commands/.gitkeep`, `scripts/.gitkeep` — obsolete placeholder files removed now that both directories contain real files
+
 ---
 
 ## [0.1.0] — 2026-07-10
@@ -88,7 +103,7 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 - `rules/security/production-scope.md` — branch patterns considered production (`main`, `master`, `production`, `prod`, `release/*`); supports `AEGIS_ENV=production` override
 
 **Phase 0 — Repository skeleton**
-- `plugin.json` — plugin metadata (`name: aegis`, `version: 0.1.0`)
+- `.claude-plugin/plugin.json` — plugin metadata (`name: aegis`, `version: 0.1.0`)
 - `CLAUDE.md` — orchestrator: Brainstorm → Spec → Plan → Execute methodology, TDD, git discipline, delegation rules, two-stage review, skills reference
 - `rules/common/stack-detection.md` — marker file → language agent mapping table (source of truth for auto-detection)
 - `mcp-config/recommended-mcp.json` — MCP registry (Serena, Lumen, Graphify, drawio-mcp-server)

@@ -109,7 +109,7 @@ See `mcp-config/recommended-mcp.json` and `SETUP.md` for installation instructio
 
 | Phase | Description |
 |---|---|
-| 0 | Skeleton: plugin.json, CLAUDE.md, rules, skills |
+| 0 | Skeleton: .claude-plugin/plugin.json, CLAUDE.md, rules, skills |
 | 1 | Security hooks: force-push, reset --hard, rm -rf |
 | 2 | Core sub-agents: architect, security, QA, code-reviewer, infra, DB, docs |
 | 3 | 12 language agents + base rules |
