@@ -1,6 +1,31 @@
+# macOS
 .DS_Store
 **/.DS_Store
+
+# Python
 __pycache__/
 **/__pycache__/
 *.pyc
 *.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+venv/
+.venv/
+dist/
+build/
+
+# Logs (local audit log lives at ~/.aegis/ — not in this repo)
+*.log
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
