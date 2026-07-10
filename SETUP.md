@@ -100,7 +100,11 @@ Check which MCPs are active:
 claude mcp list
 ```
 
-A full health check script (`scripts/doctor.sh`) will be available in Phase 6.
+Run the full health check at any time:
+
+```bash
+bash scripts/doctor.sh
+```
 
 ---
 

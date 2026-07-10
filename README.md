@@ -105,18 +105,18 @@ See `mcp-config/recommended-mcp.json` and `SETUP.md` for installation instructio
 
 ## Status
 
-`0.1.0-dev` — under active development. Implementation phases:
+`v0.1.0` — first release. All 7 phases complete.
 
-| Phase | Status | Description |
-|---|---|---|
-| 0 | ✅ Done | Skeleton: plugin.json, CLAUDE.md, rules, skills |
-| 1 | ✅ Done | Security hooks: force-push, reset --hard, rm -rf |
-| 2 | ✅ Done | Core sub-agents: architect, security, QA, code-reviewer, infra, DB, docs |
-| 3 | ✅ Done | 12 language agents + base rules |
-| 4 | ✅ Done | MCP config, OWASP rules, database rules, SETUP |
-| 5 | ✅ Done | 8 slash commands |
-| 6 | ✅ Done | Install/uninstall scripts (`install.sh`, `uninstall.sh`, `doctor.sh`, PowerShell) |
-| 7 | 🔜 | Docs finalization + `0.1.0` release |
+| Phase | Description |
+|---|---|
+| 0 | Skeleton: plugin.json, CLAUDE.md, rules, skills |
+| 1 | Security hooks: force-push, reset --hard, rm -rf |
+| 2 | Core sub-agents: architect, security, QA, code-reviewer, infra, DB, docs |
+| 3 | 12 language agents + base rules |
+| 4 | MCP config, OWASP rules, database rules |
+| 5 | 8 slash commands |
+| 6 | Install/uninstall scripts (bash + PowerShell) |
+| 7 | Docs finalization + v0.1.0 release |
 
 See [docs/architecture/AEGIS-ARCHITECTURE.md](docs/architecture/AEGIS-ARCHITECTURE.md) for design decisions.
 

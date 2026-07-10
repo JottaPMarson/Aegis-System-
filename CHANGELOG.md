@@ -4,7 +4,17 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 
 ## [Unreleased]
 
+---
+
+## [0.1.0] — 2026-07-10
+
 ### Added
+
+**Phase 7 — Docs finalization + v0.1.0 release**
+- `README.md` — finalized: version badge updated to `v0.1.0`, all 7 phases marked complete, agent/command/skill/MCP tables
+- `SETUP.md` — stale Phase 6 reference replaced with working `bash scripts/doctor.sh` code block in verify section
+- `CHANGELOG.md` — `[Unreleased]` promoted to `[0.1.0] — 2026-07-10`; diff links added at bottom
+- Git tag `v0.1.0` — initial release of the full Aegis Claude Code plugin
 
 **Phase 6 — Installation scripts**
 - `scripts/install.sh` — bash installer for Linux/macOS: clones/updates `~/.aegis/repo`, installs plugin, copies rules, merges hooks into settings.json; supports `--project` flag for per-project installs; fully idempotent (re-runs update, never duplicate)
@@ -85,3 +95,7 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 - `skills/` — 9 skill files for the orchestrator: brainstorming, writing-plans, executing-plans, TDD, subagent-delegation, codebase-navigation, debugging, git-workflow, requesting-code-review
 - `docs/architecture/AEGIS-ARCHITECTURE.md` — full architecture reference document
 - `README.md`, `SETUP.md`, `CHANGELOG.md`, `CONTRIBUTING.md` — project root documentation
+
+---
+
+[0.1.0]: https://github.com/JottaPMarson/Aegis-System-/releases/tag/v0.1.0
