@@ -1,0 +1,25 @@
+{
+  "_note": "These MCPs are recommended for Aegis but are NOT bundled. Install each independently. See SETUP.md for 'claude mcp add' commands and verification steps.",
+  "recommended": {
+    "serena": {
+      "purpose": "Precise code read/edit by symbol via LSP (find declaration, find references, rename cross-file). Third stop in codebase navigation after Graphify and Lumen.",
+      "repo": "https://github.com/oraios/serena",
+      "used_by": ["lang-js-ts", "lang-python", "lang-csharp", "lang-php", "lang-go", "lang-kotlin", "lang-swift", "lang-java", "lang-rust", "lang-ruby", "lang-dart", "code-reviewer", "database-engineer"]
+    },
+    "lumen": {
+      "purpose": "Semantic search over the local codebase via embeddings (find code by meaning, not exact text). Second stop in codebase navigation after Graphify.",
+      "repo": "https://github.com/ory/lumen",
+      "used_by": ["lang-js-ts", "lang-python", "lang-csharp", "lang-php", "lang-go", "lang-kotlin", "lang-swift", "lang-java", "lang-rust", "lang-ruby", "lang-dart", "qa-engineer", "code-reviewer"]
+    },
+    "graphify": {
+      "purpose": "Knowledge graph of code structure (AST + semantic analysis). First stop for structure/impact questions. Installs a PreToolUse hook that redirects Read/Glob to the graph automatically.",
+      "repo": "https://github.com/Graphify-Labs/graphify",
+      "used_by": ["architect", "security-reviewer", "database-engineer"]
+    },
+    "drawio-mcp-server": {
+      "purpose": "Generate and edit .drawio diagrams programmatically (C4, sequence, infrastructure diagrams).",
+      "docs": "https://www.drawio.com/docs/manual/generate/drawio-mcp-server/",
+      "used_by": ["architect"]
+    }
+  }
+}

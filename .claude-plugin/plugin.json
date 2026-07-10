@@ -1,0 +1,26 @@
+{
+  "name": "aegis",
+  "version": "0.1.0",
+  "description": "Specialized sub-agent team, security hooks, and skills for Claude Code — architect, security, QA, infra, database, and language engineers working in concert",
+  "author": {
+    "name": "jota"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "agents",
+    "security",
+    "hooks",
+    "skills",
+    "architecture",
+    "qa",
+    "devops",
+    "code-review",
+    "tdd"
+  ],
+  "commands": ["./commands/"],
+  "agents": ["./agents/"],
+  "skills": ["./skills/"],
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": {}
+}
