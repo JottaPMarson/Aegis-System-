@@ -7,7 +7,8 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 ### Added
 
 - `LICENSE` — PolyForm NonCommercial License 1.0.0: free for personal, research, education, and non-profit use; commercial use prohibited
-- Branch protection on `main`: PR review required, linear history, no force pushes, no deletions, conversation resolution required, signed commits required
+- `.github/CODEOWNERS` — @JottaPMarson declared as owner of all files and directories; GitHub auto-requests review on every PR
+- Branch protection on `main`: PR review + code owner review required, linear history, no force pushes, no deletions, conversation resolution required, signed commits required
 
 ### Fixed
 

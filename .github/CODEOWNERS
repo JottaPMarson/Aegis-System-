@@ -1,0 +1,53 @@
+# CODEOWNERS — JottaPMarson is the owner of every file in this repository.
+# GitHub requests a review from the matching owner(s) on every pull request
+# that touches the corresponding path. Last matching pattern wins.
+
+# ── Global catch-all ────────────────────────────────────────────────────────
+*                               @JottaPMarson
+
+# ── Root config & docs ──────────────────────────────────────────────────────
+/CLAUDE.md                      @JottaPMarson
+/README.md                      @JottaPMarson
+/SETUP.md                       @JottaPMarson
+/CHANGELOG.md                   @JottaPMarson
+/CONTRIBUTING.md                @JottaPMarson
+/LICENSE                        @JottaPMarson
+/.gitignore                     @JottaPMarson
+
+# ── Plugin manifest ──────────────────────────────────────────────────────────
+/.claude-plugin/                @JottaPMarson
+
+# ── Security-critical: hooks & security rules ────────────────────────────────
+/hooks/                         @JottaPMarson
+/rules/security/                @JottaPMarson
+
+# ── Agents ───────────────────────────────────────────────────────────────────
+/agents/                        @JottaPMarson
+
+# ── Commands (slash commands) ────────────────────────────────────────────────
+/commands/                      @JottaPMarson
+
+# ── Skills ───────────────────────────────────────────────────────────────────
+/skills/                        @JottaPMarson
+
+# ── Rules ────────────────────────────────────────────────────────────────────
+/rules/                         @JottaPMarson
+
+# ── Scripts (install / uninstall / doctor) ───────────────────────────────────
+/scripts/                       @JottaPMarson
+
+# ── MCP configuration ────────────────────────────────────────────────────────
+/mcp-config/                    @JottaPMarson
+
+# ── Architecture docs & ADRs ─────────────────────────────────────────────────
+/docs/                          @JottaPMarson
+
+# ── GitHub configuration ─────────────────────────────────────────────────────
+/.github/                       @JottaPMarson
+
+# ── File-type patterns ───────────────────────────────────────────────────────
+*.md                            @JottaPMarson
+*.json                          @JottaPMarson
+*.py                            @JottaPMarson
+*.sh                            @JottaPMarson
+*.ps1                           @JottaPMarson
