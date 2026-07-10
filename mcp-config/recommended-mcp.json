@@ -4,22 +4,39 @@
     "serena": {
       "purpose": "Precise code read/edit by symbol via LSP (find declaration, find references, rename cross-file). Third stop in codebase navigation after Graphify and Lumen.",
       "repo": "https://github.com/oraios/serena",
-      "used_by": ["lang-js-ts", "lang-python", "lang-csharp", "lang-php", "lang-go", "lang-kotlin", "lang-swift", "lang-java", "lang-rust", "lang-ruby", "lang-dart", "code-reviewer", "database-engineer"]
+      "install_hint": "claude mcp add serena -- uvx --from serena serena-language-server --context-window-tokens 40000",
+      "used_by": [
+        "lang-js-ts", "lang-python", "lang-csharp", "lang-php", "lang-go",
+        "lang-kotlin", "lang-swift", "lang-java", "lang-rust", "lang-ruby",
+        "lang-dart", "lang-cpp", "code-reviewer", "database-engineer"
+      ],
+      "navigation_order": 3
     },
     "lumen": {
       "purpose": "Semantic search over the local codebase via embeddings (find code by meaning, not exact text). Second stop in codebase navigation after Graphify.",
       "repo": "https://github.com/ory/lumen",
-      "used_by": ["lang-js-ts", "lang-python", "lang-csharp", "lang-php", "lang-go", "lang-kotlin", "lang-swift", "lang-java", "lang-rust", "lang-ruby", "lang-dart", "qa-engineer", "code-reviewer"]
+      "install_hint": "claude mcp add lumen -- npx @ory/lumen-mcp",
+      "used_by": [
+        "lang-js-ts", "lang-python", "lang-csharp", "lang-php", "lang-go",
+        "lang-kotlin", "lang-swift", "lang-java", "lang-rust", "lang-ruby",
+        "lang-dart", "lang-cpp", "qa-engineer", "code-reviewer"
+      ],
+      "navigation_order": 2
     },
     "graphify": {
-      "purpose": "Knowledge graph of code structure (AST + semantic analysis). First stop for structure/impact questions. Installs a PreToolUse hook that redirects Read/Glob to the graph automatically.",
+      "purpose": "Knowledge graph of code structure (AST + semantic analysis). First stop for structure/impact questions. Installs a PreToolUse hook that redirects Read/Glob to the graph automatically when running.",
       "repo": "https://github.com/Graphify-Labs/graphify",
-      "used_by": ["architect", "security-reviewer", "database-engineer"]
+      "install_hint": "See https://github.com/Graphify-Labs/graphify for installation steps — Graphify installs its own Claude Code hook.",
+      "used_by": ["architect", "security-reviewer", "database-engineer"],
+      "navigation_order": 1,
+      "known_limitation": "Caches graph.json at startup. Use --watch mode or a post-commit hook to keep the graph current. Validate graph freshness before trusting structural answers (Phase 4 validation item)."
     },
     "drawio-mcp-server": {
-      "purpose": "Generate and edit .drawio diagrams programmatically (C4, sequence, infrastructure diagrams).",
+      "purpose": "Generate and edit .drawio diagrams programmatically (C4, sequence, infrastructure diagrams). Used exclusively by the architect agent.",
       "docs": "https://www.drawio.com/docs/manual/generate/drawio-mcp-server/",
-      "used_by": ["architect"]
+      "install_hint": "See the drawio-mcp-server documentation for installation steps.",
+      "used_by": ["architect"],
+      "navigation_order": null
     }
   }
 }
