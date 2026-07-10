@@ -353,7 +353,7 @@ Skill genérica (todo sub-agent que mexe em código herda isso, não só o orque
 ### 8.1 Mecanismo
 Hooks do tipo `PreToolUse` interceptam chamadas de `Bash` (e `Write`/`Edit` quando relevante) **antes** da execução. O hook roda um script que:
 1. Faz *pattern-match* do comando contra uma lista de padrões perigosos (regex).
-2. Se casar, retorna decisão `ask` (Claude Code pausa e pede confirmação explícita ao usuário, mostrando o comando e o motivo do bloqueio) — nunca `deny` silencioso nem `allow` automático.
+2. Se casar, retorna decisão `block` via JSON no stdout (`{"decision": "block", "reason": "..."}`) e sai com código não-zero — Claude Code bloqueia o comando e exibe o motivo para o usuário. O usuário precisa adicionar `AEGIS_ALLOW=1` ao comando para passar explicitamente.
 3. Registra a tentativa em log local (`~/.aegis/security-hook.log`) para auditoria posterior (o sub-agent de Segurança pode revisar esse log periodicamente).
 
 ### 8.2 Categorias cobertas (exemplos — a lista completa vai em `rules/security/dangerous-patterns.md`)
@@ -366,12 +366,14 @@ Hooks do tipo `PreToolUse` interceptam chamadas de `Bash` (e `Write`/`Edit` quan
 
 ### 8.3 Estrutura técnica
 - `hooks/hooks.json`: registra os matchers (ex.: evento `PreToolUse`, matcher `Bash`) apontando para os scripts.
-- `hooks/guard-*.sh`: scripts leves (bash/python) que fazem o pattern-match e devolvem a decisão estruturada esperada pelo Claude Code (allow / ask / deny com mensagem).
-- `hooks/require-confirmation.py`: helper compartilhado para padronizar a mensagem de confirmação (comando, motivo, sugestão de alternativa segura).
+- `hooks/guard-git-push.py`: intercepta `git push --force` / `git push -f`; bloqueia e sugere `--force-with-lease`.
+- `hooks/guard-dangerous-bash.py`: intercepta `rm -rf` e `git reset --hard`; bloqueia com motivo e alternativa segura.
+- `hooks/require-confirmation.py`: utilitário compartilhado — parsing do stdin JSON, lógica `AEGIS_ALLOW=1`, escrita de log, formatação da resposta `block`.
 - Testável isoladamente (scripts recebem o payload do hook via stdin/JSON e podem ser testados com casos de exemplo, sem precisar rodar o Claude Code completo).
+- **Nota**: padrões adicionais documentados em `rules/security/dangerous-patterns.md §Phase 2` (terraform destroy, kubectl delete, DROP TABLE, etc.) estão planejados mas não implementados — a adição de cada um exige adicionar o regex ao script de guarda correspondente.
 
 ### 8.4 Extensibilidade
-Novos padrões perigosos entram apenas editando `rules/security/dangerous-patterns.md` (fonte única) — os scripts leem dali, então adicionar uma regra não exige tocar em código.
+Novos padrões perigosos: (1) documenta em `rules/security/dangerous-patterns.md` (fonte única de descrições e intenção); (2) adiciona o regex ao script de guarda correspondente (`hooks/guard-git-push.py` ou `hooks/guard-dangerous-bash.py`). Os scripts não leem o `.md` em runtime — o arquivo é referência humana, não configuração dinâmica.
 
 ### 8.5 Como o hook sabe que é "produção" (decisão fechada)
 

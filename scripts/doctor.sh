@@ -86,7 +86,7 @@ fi
 # ── 4. Hooks ────────────────────────────────────────────────────────────────
 head "4. Hooks (${SETTINGS_TARGET})"
 if [ -f "${SETTINGS_TARGET}" ]; then
-  if python3 - "${SETTINGS_TARGET}" "${AEGIS_REPO}" <<'PYEOF' 2>/dev/null; then
+  HOOK_OUTPUT=$(python3 - "${SETTINGS_TARGET}" "${AEGIS_REPO}" 2>/dev/null <<'PYEOF' || echo "ERROR")
 import json, sys
 
 settings_path = sys.argv[1]
@@ -114,16 +114,15 @@ if aegis_hooks:
 else:
     print("NOT_FOUND")
 PYEOF
-    HOOK_OUTPUT=$(python3 - "${SETTINGS_TARGET}" "${AEGIS_REPO}" 2>/dev/null || echo "ERROR")
-    if echo "${HOOK_OUTPUT}" | grep -q "^FOUND:"; then
-      HOOK_COUNT=$(echo "${HOOK_OUTPUT}" | grep -c "^FOUND:")
-      ok "${HOOK_COUNT} Aegis hook(s) registered in ${SETTINGS_TARGET}"
-    else
-      issue "Aegis hooks not found in ${SETTINGS_TARGET}"
-      warn "  Run: scripts/install.sh$(${PROJECT_MODE} && echo ' --project' || echo '')"
-    fi
-  else
+
+  if [ "${HOOK_OUTPUT}" = "ERROR" ] || echo "${HOOK_OUTPUT}" | grep -q "INVALID_JSON"; then
     issue "Could not parse ${SETTINGS_TARGET} — may be invalid JSON"
+  elif echo "${HOOK_OUTPUT}" | grep -q "^FOUND:"; then
+    HOOK_COUNT=$(echo "${HOOK_OUTPUT}" | grep -c "^FOUND:")
+    ok "${HOOK_COUNT} Aegis hook(s) registered in ${SETTINGS_TARGET}"
+  else
+    issue "Aegis hooks not found in ${SETTINGS_TARGET}"
+    warn "  Run: scripts/install.sh$(${PROJECT_MODE} && echo ' --project' || echo '')"
   fi
 else
   issue "Settings file not found: ${SETTINGS_TARGET}"
