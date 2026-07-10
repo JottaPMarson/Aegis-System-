@@ -1,16 +1,47 @@
 # Setup
 
-## Automated (Phase 6 — not yet available)
+## Automated (Linux / macOS)
 
 ```bash
-./scripts/install.sh
+# User-level install (works across all your projects):
+bash scripts/install.sh
+
+# Project-level install (rules/hooks scoped to the current directory):
+bash scripts/install.sh --project
+
+# Verify at any time:
+bash scripts/doctor.sh
+
+# Uninstall:
+bash scripts/uninstall.sh
 ```
 
-Until `scripts/install.sh` is implemented (Phase 6), follow the manual steps below.
+## Automated (Windows — PowerShell)
+
+```powershell
+# User-level:
+.\scripts\install.ps1
+
+# Project-level:
+.\scripts\install.ps1 -Project
+
+# Uninstall:
+.\scripts\uninstall.ps1
+```
+
+### What the installer does (in order)
+
+1. Clones or updates `~/.aegis/repo` from GitHub (idempotent — re-running pulls latest).
+2. Registers the plugin: `claude plugin install .` (prints a manual command if the CLI is unavailable).
+3. Copies `rules/` to `~/.claude/rules/aegis/` (or `.claude/rules/aegis/` with `--project`).
+4. Merges Aegis hooks into `~/.claude/settings.json` without clobbering your existing hooks.
+5. Runs `scripts/doctor.sh` to confirm everything is in place.
 
 ---
 
-## Manual setup
+## Manual setup (if the automated scripts are unavailable)
+
+---
 
 ### 1. Install the plugin
 

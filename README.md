@@ -115,7 +115,7 @@ See `mcp-config/recommended-mcp.json` and `SETUP.md` for installation instructio
 | 3 | ✅ Done | 12 language agents + base rules |
 | 4 | ✅ Done | MCP config, OWASP rules, database rules, SETUP |
 | 5 | ✅ Done | 8 slash commands |
-| 6 | 🔜 Next | Install/uninstall scripts (`scripts/install.sh`, `doctor.sh`) |
+| 6 | ✅ Done | Install/uninstall scripts (`install.sh`, `uninstall.sh`, `doctor.sh`, PowerShell) |
 | 7 | 🔜 | Docs finalization + `0.1.0` release |
 
 See [docs/architecture/AEGIS-ARCHITECTURE.md](docs/architecture/AEGIS-ARCHITECTURE.md) for design decisions.
@@ -125,8 +125,17 @@ See [docs/architecture/AEGIS-ARCHITECTURE.md](docs/architecture/AEGIS-ARCHITECTU
 ## Installation
 
 ```bash
-# Phase 6 (coming soon):
-./scripts/install.sh
+# Linux / macOS — user level (all projects):
+bash scripts/install.sh
+
+# Project level (current directory only):
+bash scripts/install.sh --project
+
+# Windows (PowerShell):
+.\scripts\install.ps1
+
+# Verify:
+bash scripts/doctor.sh
 ```
 
-Manual setup: see [SETUP.md](SETUP.md).
+For MCP setup (Serena, Lumen, Graphify, drawio-mcp-server), see [SETUP.md](SETUP.md).

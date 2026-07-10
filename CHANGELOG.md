@@ -6,6 +6,14 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 
 ### Added
 
+**Phase 6 — Installation scripts**
+- `scripts/install.sh` — bash installer for Linux/macOS: clones/updates `~/.aegis/repo`, installs plugin, copies rules, merges hooks into settings.json; supports `--project` flag for per-project installs; fully idempotent (re-runs update, never duplicate)
+- `scripts/uninstall.sh` — bash uninstaller: reverses install (plugin → rules → hooks → optional repo removal); asks before deleting `~/.aegis/repo`; does not touch external MCPs
+- `scripts/doctor.sh` — standalone health check: verifies Claude CLI, plugin registration, rules directory, hooks in settings.json, and which of the 4 recommended MCPs are configured; exits non-zero if any check fails
+- `scripts/install.ps1` — PowerShell equivalent of install.sh for Windows
+- `scripts/uninstall.ps1` — PowerShell equivalent of uninstall.sh for Windows
+- Hook merge uses Python inline script to resolve `${CLAUDE_PLUGIN_ROOT}` → actual repo path and merge without clobbering existing hooks from other plugins
+
 **Phase 5 — Slash commands (8 commands)**
 - `commands/architect.md` — `/aegis:architect`: dispatch Architect for design + ADR; two-stage review; presents blast radius and open questions
 - `commands/diagram.md` — `/aegis:diagram`: dispatch Architect for drawio-mcp diagram generation; fallback to Mermaid/ASCII if MCP not installed
