@@ -6,6 +6,16 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 
 ### Added
 
+**Phase 5 — Slash commands (8 commands)**
+- `commands/architect.md` — `/aegis:architect`: dispatch Architect for design + ADR; two-stage review; presents blast radius and open questions
+- `commands/diagram.md` — `/aegis:diagram`: dispatch Architect for drawio-mcp diagram generation; fallback to Mermaid/ASCII if MCP not installed
+- `commands/security-review.md` — `/aegis:security-review`: OWASP Top 10:2025 review on a scope; auto-detects changed files if no scope given; pauses on Critical/High findings
+- `commands/qa-review.md` — `/aegis:qa-review`: two modes — generate test plan (pre-impl) or validate coverage (post-impl); presents plan for user confirmation before writing tests
+- `commands/db-review.md` — `/aegis:db-review`: schema/migration/index/cache review; auto-detects pending migration files; triggers infra hand-off flag when provisioning is involved
+- `commands/infra-review.md` — `/aegis:infra-review`: Dockerfile/k8s/Terraform/CI review; triggers security hand-off on IAM/secrets; scoped to infra files only
+- `commands/code-review.md` — `/aegis:code-review`: quality review outside automatic pipeline; auto-detects language and loads correct rules file; returns verdict (Approved / Needs changes)
+- `commands/deploy-check.md` — `/aegis:deploy-check`: full 6-step pre-deploy checklist coordinating security-reviewer, infra-engineer, database-engineer, and QA test run; produces Go/No-go summary
+
 **Phase 4 — MCP Integrations**
 - `rules/security/owasp-top10-2025.md` — full OWASP Top 10:2025 reference with per-category checklists (A01–A10); used by `security-reviewer` agent
 - `rules/database/postgresql.md` — schema design, indexing, migrations, and query rules for PostgreSQL
