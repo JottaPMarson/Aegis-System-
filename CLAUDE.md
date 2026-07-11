@@ -5,12 +5,9 @@ Este repositório É o plugin Aegis. Se você chegou aqui pra usar o Aegis num p
 ## Onde está o quê
 
 - Comportamento real do orquestrador (carregado quando o Aegis é instalado como plugin): `skills/orchestrator/SKILL.md`
-- Arquitetura completa e decisões já tomadas: `docs/architecture/AEGIS-ARCHITECTURE.md` — leia antes de adicionar ou mudar qualquer componente
-- Roadmap de implementação, fase por fase: seção 12 do documento de arquitetura acima
 
 ## Regras pra trabalhar neste repo
 
-- Siga o roadmap fase por fase, sem pular etapas
 - Antes de qualquer commit, rode `claude plugin validate ./ --strict`
 - Hooks novos: sempre testados isolados antes de registrar em `hooks/hooks.json`
 - Toda skill precisa de frontmatter (`description` no mínimo)

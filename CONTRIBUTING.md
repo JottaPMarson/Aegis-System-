@@ -43,6 +43,6 @@ Format: `<type>: <summary>` — types: `feat`, `fix`, `refactor`, `test`, `docs`
 
 One logical change per commit. Do not bundle Phase N and Phase N+1 work in the same commit.
 
-## Phase discipline
+## Scope discipline
 
-Implement one phase at a time (roadmap in `docs/architecture/AEGIS-ARCHITECTURE.md` §12). Do not add code for a later phase until the current phase is tested and complete. Each phase ends with a commit and push.
+One logical change per PR. Do not bundle unrelated fixes or features. Each change ends with a commit, push, and passing CI.

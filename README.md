@@ -118,8 +118,6 @@ See `mcp-config/recommended-mcp.json` and `SETUP.md` for installation instructio
 | 6 | Install/uninstall scripts (bash + PowerShell) |
 | 7 | Docs finalization + v0.1.0 release |
 
-See [docs/architecture/AEGIS-ARCHITECTURE.md](docs/architecture/AEGIS-ARCHITECTURE.md) for design decisions.
-
 ---
 
 ## Installation
