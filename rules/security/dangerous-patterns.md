@@ -28,37 +28,59 @@ To add a new pattern: add it here first, then add the regex to the relevant guar
 
 ---
 
-## Phase 2 (planned — not yet implemented)
+## Phase 2 (implemented)
+
+**Guard:** `hooks/guard-phase2.py`
 
 ### git-clean
-`git clean -fd`, `git clean -fdx` — removes untracked files and directories.
+**Triggers:** `git clean -fd`, `git clean -fdx`, `git clean -fX`, `git clean -f -d`, any `-f` + `-d`/`-x`/`-X` combination
+**Risk:** Permanently removes untracked or ignored files. Files not in git history are gone with no undo.
+**Safe alternative:** `git clean -n` (dry run) to preview; move important files to a backup first.
 
 ### git-branch-delete-protected
-`git branch -D <protected>` — force-deletes a branch matching production-scope patterns.
+**Triggers:** `git branch -D <branch>` where branch matches production patterns in `rules/security/production-scope.md`
+**Risk:** Force-deletes a production branch, removing commits reachable only from that ref. Recovery requires reflog or remote backup.
+**Safe alternative:** `git branch -d` (lowercase) — refuses to delete unmerged branches.
+
+### terraform-destroy
+**Triggers:** `terraform destroy`
+**Risk:** Tears down ALL managed infrastructure in the current workspace. Resources may take hours to recreate.
+**Safe alternative:** `terraform plan -destroy` to preview; `-target=<resource>` to destroy a specific resource only.
+
+### kubectl-delete-namespace
+**Triggers:** `kubectl delete namespace <name>`
+**Risk:** Terminates ALL pods, services, deployments, and PVCs in the namespace. Stateful data may be lost.
+**Safe alternative:** Scale deployments to 0 first; back up PVCs before deleting.
+
+### docker-system-prune
+**Triggers:** `docker system prune -a` / `docker system prune --all`
+**Risk:** Removes ALL unused images, containers, networks, and build cache — including images for projects not currently running.
+**Safe alternative:** `docker container prune` (containers only) or `docker image prune` (dangling images only); avoid `-a`.
+
+### drop-table
+**Triggers:** `DROP TABLE`, `DROP DATABASE`, `DROP SCHEMA`, `TRUNCATE`, `TRUNCATE TABLE` in any shell context
+**Risk:** Permanently destroys table data or schema. Cannot be rolled back outside a transaction.
+**Safe alternative:** Wrap in a transaction; take a dump first; use `DELETE WHERE` for targeted row removal.
+
+### chmod-777
+**Triggers:** `chmod -R 777`, `chmod -R 0777`, `chmod -R a+rwx`
+**Risk:** Grants world read+write+execute to every file in the tree. Any user or process on the system can read, modify, or execute those files.
+**Safe alternative:** `755` for directories, `644` for files, `600` for secrets; fix ownership issues with `chown`.
+
+### secrets-in-commit
+**Triggers:** `git add .env`, `git add .env.*`, `git add id_rsa`, `git add *.key`, `git add *.pem`, `git add credentials.json`, `git add *secrets*.json`; also: AWS access keys (AKIA...), Stripe keys (sk_live_...), GitHub tokens (ghp_...), PEM headers in command strings
+**Risk:** Once committed and pushed, secrets in git history are compromised even if deleted in a later commit.
+**Safe alternative:** Add to `.gitignore` immediately; use environment variables or a secrets manager; rotate any exposed key.
+
+---
+
+## Phase 2 — not implemented (future)
 
 ### git-push-direct-main
 `git push origin main` (without --force) when on a production branch — should go through PR.
 
-### terraform-destroy
-`terraform destroy` — tears down all managed infrastructure.
-
-### kubectl-delete-namespace
-`kubectl delete namespace <name>` — removes all resources in a namespace.
-
-### docker-system-prune
-`docker system prune -a` — removes all images, containers, volumes, and networks.
-
-### drop-table
-`DROP TABLE`, `DROP DATABASE`, `TRUNCATE` in any SQL context.
-
 ### migration-down-production
 Running a migration `down` while `AEGIS_ENV=production` is set or on a production branch.
-
-### secrets-in-commit
-`git add .env`, `git commit` with patterns matching API keys, tokens, private keys.
-
-### chmod-777
-`chmod -R 777` — opens all permissions recursively.
 
 ---
 

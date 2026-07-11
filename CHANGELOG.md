@@ -7,6 +7,8 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 ### Added
 
 - `skills/orchestrator/SKILL.md` — orchestrator methodology migrated from `CLAUDE.md`; now loaded as plugin context in any project that installs Aegis (the `CLAUDE.md` alone was never loaded when the plugin was installed)
+- `hooks/guard-phase2.py` — Phase 2 security hook: blocks `git clean -fd/x/X`, `git branch -D` on production branches, `terraform destroy`, `kubectl delete namespace`, `docker system prune -a`, SQL `DROP TABLE/DATABASE/TRUNCATE`, `chmod -R 777`, and `git add` of secret files (`.env`, `*.pem`, `id_rsa`, etc.); same block-by-default + `AEGIS_ALLOW=1` override pattern as Phase 1
+- `hooks/test_phase2.sh` — 46 isolated tests for all Phase 2 patterns; all pass
 - `scripts/doctor.ps1` — PowerShell mirror of `doctor.sh` for Windows: same 5 checks (Claude CLI, plugin, rules, hooks, MCPs); `install.ps1` no longer points to a missing script
 - `.github/workflows/plugin-validate.yml` — CI: runs `claude plugin validate . --strict` and `hooks/test_phase1.sh` on every PR and push to `main`; blocks merge on failure
 - `LICENSE` — PolyForm NonCommercial License 1.0.0: free for personal, research, education, and non-profit use; commercial use prohibited
@@ -17,6 +19,11 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 
 - `CLAUDE.md` — repurposed as developer guide for working on the Aegis repo itself; orchestrator methodology now lives in `skills/orchestrator/SKILL.md`
 - All 9 existing `skills/*/SKILL.md` files — added YAML frontmatter (`name` + `description`) required by `claude plugin validate --strict`
+
+### Changed (hooks)
+
+- `hooks/hooks.json` — registered `guard-phase2.py` as a third `PreToolUse` matcher on `Bash`
+- `rules/security/dangerous-patterns.md` — Phase 2 section updated from "planned" to "implemented" with exact triggers and alternatives for all 8 new patterns
 
 ### Fixed
 
