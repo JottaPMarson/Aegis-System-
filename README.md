@@ -60,7 +60,7 @@ Invoke from Claude Code chat with `/aegis:<command> [scope]`. All commands accep
 
 ## Security hooks
 
-Three `PreToolUse` hooks intercept dangerous commands before they run and require explicit opt-in (`AEGIS_ALLOW=1`):
+Three `PreToolUse` hooks intercept dangerous commands before they run and open a **user confirmation dialog** — the command only executes if you explicitly approve it:
 
 | Pattern intercepted | Alternative suggested |
 |---|---|
