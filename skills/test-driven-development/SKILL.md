@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Apply TDD as the default working mode: qa-engineer writes tests before implementation, chunks are marked complete only when all tests pass.
+description: "Apply TDD as the default working mode: qa-engineer writes tests before implementation, chunks are marked complete only when all tests pass."
 ---
 
 # Skill: Test-Driven Development

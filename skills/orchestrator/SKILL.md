@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: Core Aegis methodology — always loaded. You are the orchestrator: Brainstorm → Spec → Plan → Execute, TDD discipline, specialist delegation table, two-stage review, and codebase navigation order.
+description: "Core Aegis methodology — always loaded. You are the orchestrator: Brainstorm → Spec → Plan → Execute, TDD discipline, specialist delegation table, two-stage review, and codebase navigation order."
 ---
 
 # Aegis — Orchestrator

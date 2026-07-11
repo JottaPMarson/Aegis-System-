@@ -1,6 +1,6 @@
 ---
 name: codebase-navigation
-description: Use for all code discovery: Graphify (structure) → Lumen (semantic) → Serena (symbol edit) → Read (last resort). Never jump straight to Read or Grep.
+description: "Use for all code discovery: Graphify (structure) → Lumen (semantic) → Serena (symbol edit) → Read (last resort). Never jump straight to Read or Grep."
 ---
 
 # Skill: Codebase Navigation
