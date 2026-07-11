@@ -25,6 +25,12 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 - `hooks/hooks.json` — registered `guard-phase2.py` as a third `PreToolUse` matcher on `Bash`
 - `rules/security/dangerous-patterns.md` — Phase 2 section updated from "planned" to "implemented" with exact triggers and alternatives for all 8 new patterns
 
+### Added (rules/infra)
+
+- `rules/infra/docker.md` — conventions for Dockerfiles (base images, multi-stage builds, non-root user, HEALTHCHECK, signal handling) and docker-compose (networking, secrets, volume naming, healthcheck-based depends_on)
+- `rules/infra/kubernetes.md` — conventions for K8s manifests: resource requests/limits, rolling update strategy, health probes, pod securityContext, RBAC least privilege, NetworkPolicy default-deny, labels standard, Helm chart rules
+- `rules/infra/terraform.md` — conventions for Terraform: module structure, provider version pinning, remote state with S3+DynamoDB locking, sensitive variables, IAM least privilege, plan-before-apply discipline, tflint/checkov/tfsec checks
+
 ### Fixed
 
 - `scripts/doctor.sh` — section 4 (hooks) always reported "not found" due to a double `python3` heredoc call: the heredoc was consumed by the `if` condition, leaving the second call without a script; restructured to a single call with captured output
