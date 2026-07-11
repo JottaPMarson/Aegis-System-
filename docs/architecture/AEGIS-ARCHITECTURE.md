@@ -351,10 +351,20 @@ Skill genérica (todo sub-agent que mexe em código herda isso, não só o orque
 **Comportamento padrão definido por você: bloquear por padrão, mas pedir confirmação explícita do usuário para liberar** (não é bloqueio cego, nem passa batido).
 
 ### 8.1 Mecanismo
-Hooks do tipo `PreToolUse` interceptam chamadas de `Bash` (e `Write`/`Edit` quando relevante) **antes** da execução. O hook roda um script que:
+Hooks do tipo `PreToolUse` interceptam chamadas de `Bash` **antes** da execução. O hook roda um script que:
 1. Faz *pattern-match* do comando contra uma lista de padrões perigosos (regex).
-2. Se casar, retorna decisão `block` via JSON no stdout (`{"decision": "block", "reason": "..."}`) e sai com código não-zero — Claude Code bloqueia o comando e exibe o motivo para o usuário. O usuário precisa adicionar `AEGIS_ALLOW=1` ao comando para passar explicitamente.
-3. Registra a tentativa em log local (`~/.aegis/security-hook.log`) para auditoria posterior (o sub-agent de Segurança pode revisar esse log periodicamente).
+2. Se casar, sai com **exit 0** e imprime no stdout o JSON:
+   ```json
+   {
+     "hookSpecificOutput": {
+       "hookEventName": "PreToolUse",
+       "permissionDecision": "ask",
+       "permissionDecisionReason": "<motivo + alternativa segura>"
+     }
+   }
+   ```
+   `permissionDecision: "ask"` faz o Claude Code abrir um **diálogo de confirmação na interface** — o comando só executa se o usuário aprovar explicitamente. Exit não-zero (ex.: exit 1) é tratado como "non-blocking error" pela plataforma: o comando segue executando e a mensagem só aparece em modo `--debug`. Por isso exit 0 com o JSON correto é obrigatório.
+3. Registra a tentativa em log local (`~/.aegis/security-hook.log`) com status `BLOCKED_PENDING_USER` — o resultado da decisão do usuário não é capturável dentro do hook em si.
 
 ### 8.2 Categorias cobertas (exemplos — a lista completa vai em `rules/security/dangerous-patterns.md`)
 - **Git destrutivo**: `git push --force`, `git push -f`, `git reset --hard`, `git clean -fd`, `git branch -D` em branches protegidas, push direto para `main`/`master`/`production`.
@@ -368,7 +378,7 @@ Hooks do tipo `PreToolUse` interceptam chamadas de `Bash` (e `Write`/`Edit` quan
 - `hooks/hooks.json`: registra os matchers (ex.: evento `PreToolUse`, matcher `Bash`) apontando para os scripts.
 - `hooks/guard-git-push.py`: intercepta `git push --force` / `git push -f`; bloqueia e sugere `--force-with-lease`.
 - `hooks/guard-dangerous-bash.py`: intercepta `rm -rf` e `git reset --hard`; bloqueia com motivo e alternativa segura.
-- `hooks/require-confirmation.py`: utilitário compartilhado — parsing do stdin JSON, lógica `AEGIS_ALLOW=1`, escrita de log, formatação da resposta `block`.
+- `hooks/require-confirmation.py`: utilitário compartilhado — parsing do stdin JSON, escrita de log, formatação do JSON `hookSpecificOutput` com `permissionDecision: "ask"`.
 - Testável isoladamente (scripts recebem o payload do hook via stdin/JSON e podem ser testados com casos de exemplo, sem precisar rodar o Claude Code completo).
 - **Nota**: padrões adicionais documentados em `rules/security/dangerous-patterns.md §Phase 2` (terraform destroy, kubectl delete, DROP TABLE, etc.) estão planejados mas não implementados — a adição de cada um exige adicionar o regex ao script de guarda correspondente.
 

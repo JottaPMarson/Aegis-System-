@@ -3,8 +3,8 @@
 guard-dangerous-bash.py
 PreToolUse hook — blocks rm -rf and git reset --hard.
 
-Behavior: block (ask) by default. User must add AEGIS_ALLOW=1 to proceed.
-Logs every attempt to ~/.aegis/security-hook.log.
+Behavior: escalates to user confirmation dialog (permissionDecision: "ask").
+Logs detection to ~/.aegis/security-hook.log.
 Patterns are documented in rules/security/dangerous-patterns.md.
 
 Test (run from repo root):
@@ -13,9 +13,6 @@ Test (run from repo root):
 
   echo '{"tool_name":"Bash","tool_input":{"command":"git reset --hard HEAD~3"}}' \
     | python3 hooks/guard-dangerous-bash.py
-
-  echo '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 rm -rf ./dist"}}' \
-    | python3 hooks/guard-dangerous-bash.py ; echo "exit: $?"
 
   echo '{"tool_name":"Bash","tool_input":{"command":"rm -f single-file.txt"}}' \
     | python3 hooks/guard-dangerous-bash.py ; echo "exit: $?"
@@ -86,17 +83,13 @@ def main() -> None:
     if not command:
         sys.exit(0)
 
-    if _rc.is_overridden(command):
-        _rc.log_attempt(command, "override", allowed=True)
-        sys.exit(0)
-
     pattern = match_pattern(command)
     if pattern is None:
         sys.exit(0)
 
     _rc.log_attempt(command, pattern["name"], allowed=False)
     print(_rc.block_response(command, pattern["name"], pattern["reason"], pattern["alternative"]))
-    sys.exit(1)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

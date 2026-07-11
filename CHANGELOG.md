@@ -4,10 +4,22 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 
 ## [Unreleased]
 
+### Fixed
+
+- **Critical: all three security hooks were non-functional** — `guard-git-push.py`, `guard-dangerous-bash.py`, and `guard-phase2.py` were calling `sys.exit(1)` after printing `{"decision": "block", "reason": "..."}`. Per the official Claude Code hooks spec, exit code 1 is a "non-blocking error": the tool call proceeds normally and the message only appears in `--debug` mode. Fixed by switching to `exit 0` + `hookSpecificOutput.permissionDecision: "ask"` JSON on stdout, which triggers a real user confirmation dialog in the interface.
+- **Removed `AEGIS_ALLOW=1` bypass** — the previous `is_overridden()` mechanism in `require-confirmation.py` allowed the agent to self-bypass the hook by prepending a magic string to the command. With `permissionDecision: "ask"`, approval comes exclusively from the user clicking in the UI dialog.
+- `hooks/require-confirmation.py` — `block_response()` now returns correct `hookSpecificOutput` JSON; `is_overridden()` removed
+- `hooks/guard-git-push.py`, `hooks/guard-dangerous-bash.py`, `hooks/guard-phase2.py` — removed `is_overridden` check; changed `sys.exit(1)` → `sys.exit(0)`
+- `hooks/test_phase1.sh`, `hooks/test_phase2.sh` — rewritten: `assert_blocked` now checks for `"permissionDecision"` in stdout (not exit code); `assert_allowed` checks stdout has no permission decision; removed `AEGIS_ALLOW=1` test cases
+- `docs/architecture/AEGIS-ARCHITECTURE.md §8.1` — updated to document the correct `permissionDecision: "ask"` mechanism and explain why exit 1 is wrong
+- `rules/security/dangerous-patterns.md` — "Override mechanism" section replaced with correct "Confirmation mechanism" description
+- `skills/git-workflow/SKILL.md` — removed `AEGIS_ALLOW=1` instruction; replaced with correct dialog description
+- `rules/infra/terraform.md` — updated `terraform destroy` description to reference the dialog, not `AEGIS_ALLOW=1`
+
 ### Added
 
 - `skills/orchestrator/SKILL.md` — orchestrator methodology migrated from `CLAUDE.md`; now loaded as plugin context in any project that installs Aegis (the `CLAUDE.md` alone was never loaded when the plugin was installed)
-- `hooks/guard-phase2.py` — Phase 2 security hook: blocks `git clean -fd/x/X`, `git branch -D` on production branches, `terraform destroy`, `kubectl delete namespace`, `docker system prune -a`, SQL `DROP TABLE/DATABASE/TRUNCATE`, `chmod -R 777`, and `git add` of secret files (`.env`, `*.pem`, `id_rsa`, etc.); same block-by-default + `AEGIS_ALLOW=1` override pattern as Phase 1
+- `hooks/guard-phase2.py` — Phase 2 security hook: escalates to user confirmation for `git clean -fd/x/X`, `git branch -D` on production branches, `terraform destroy`, `kubectl delete namespace`, `docker system prune -a`, SQL `DROP TABLE/DATABASE/TRUNCATE`, `chmod -R 777`, and `git add` of secret files (`.env`, `*.pem`, `id_rsa`, etc.)
 - `hooks/test_phase2.sh` — 46 isolated tests for all Phase 2 patterns; all pass
 - `scripts/doctor.ps1` — PowerShell mirror of `doctor.sh` for Windows: same 5 checks (Claude CLI, plugin, rules, hooks, MCPs); `install.ps1` no longer points to a missing script
 - `.github/workflows/plugin-validate.yml` — CI: runs `claude plugin validate . --strict` and `hooks/test_phase1.sh` on every PR and push to `main`; blocks merge on failure

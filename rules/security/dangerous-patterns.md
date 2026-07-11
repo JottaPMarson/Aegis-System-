@@ -84,11 +84,8 @@ Running a migration `down` while `AEGIS_ENV=production` is set or on a productio
 
 ---
 
-## Override mechanism
+## Confirmation mechanism
 
-Any blocked command can be explicitly allowed by prepending `AEGIS_ALLOW=1`:
-```
-AEGIS_ALLOW=1 git push --force origin main
-```
-The hook allows it through and logs `ALLOWED | override` to `~/.aegis/security-hook.log`.
-This forces the user to consciously type the override — it cannot happen silently.
+When a dangerous pattern is detected, the hook returns `permissionDecision: "ask"` (exit 0 + JSON stdout). Claude Code opens a **user confirmation dialog** in the interface. The command only executes if the user approves explicitly in that dialog — Claude cannot self-approve.
+
+The hook logs the detection to `~/.aegis/security-hook.log` as `BLOCKED_PENDING_USER`. The user's final decision (approve/deny) happens after the hook exits and is not captured in the log.

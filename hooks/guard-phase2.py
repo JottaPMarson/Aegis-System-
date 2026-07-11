@@ -13,8 +13,8 @@ Covers (from rules/security/dangerous-patterns.md):
   - chmod-777               : chmod -R 777 (recursive world-write)
   - secrets-in-commit       : git add .env / secret files / API key patterns in command
 
-Behavior: block by default. Add AEGIS_ALLOW=1 to override.
-Logs to ~/.aegis/security-hook.log.
+Behavior: escalates to user confirmation dialog (permissionDecision: "ask").
+Logs detection to ~/.aegis/security-hook.log.
 
 Test (run from repo root):
   echo '{"tool_name":"Bash","tool_input":{"command":"git clean -fd"}}' \
@@ -262,17 +262,13 @@ def main() -> None:
     if not command:
         sys.exit(0)
 
-    if _rc.is_overridden(command):
-        _rc.log_attempt(command, "override", allowed=True)
-        sys.exit(0)
-
     pattern = match_pattern(command)
     if pattern is None:
         sys.exit(0)
 
     _rc.log_attempt(command, pattern["name"], allowed=False)
     print(_rc.block_response(command, pattern["name"], pattern["reason"], pattern["alternative"]))
-    sys.exit(1)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

@@ -3,8 +3,8 @@
 guard-git-push.py
 PreToolUse hook — blocks 'git push --force' and 'git push -f'.
 
-Behavior: block (ask) by default. User must add AEGIS_ALLOW=1 to proceed.
-Logs every attempt to ~/.aegis/security-hook.log.
+Behavior: escalates to user confirmation dialog (permissionDecision: "ask").
+Logs detection to ~/.aegis/security-hook.log.
 
 Test (run from repo root):
   echo '{"tool_name":"Bash","tool_input":{"command":"git push --force origin main"}}' \
@@ -12,9 +12,6 @@ Test (run from repo root):
 
   echo '{"tool_name":"Bash","tool_input":{"command":"git push -f"}}' \
     | python3 hooks/guard-git-push.py
-
-  echo '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 git push --force origin main"}}' \
-    | python3 hooks/guard-git-push.py ; echo "exit: $?"
 
   echo '{"tool_name":"Bash","tool_input":{"command":"git push origin main"}}' \
     | python3 hooks/guard-git-push.py ; echo "exit: $?"
@@ -24,6 +21,7 @@ import importlib.util
 import os
 import re
 import sys
+
 
 # Load shared utility (hyphen in filename — can't use normal import)
 _spec = importlib.util.spec_from_file_location(
@@ -62,16 +60,12 @@ def main() -> None:
     if not command:
         sys.exit(0)
 
-    if _rc.is_overridden(command):
-        _rc.log_attempt(command, PATTERN_NAME, allowed=True)
-        sys.exit(0)
-
     if not is_force_push(command):
         sys.exit(0)
 
     _rc.log_attempt(command, PATTERN_NAME, allowed=False)
     print(_rc.block_response(command, PATTERN_NAME, REASON, ALTERNATIVE))
-    sys.exit(1)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

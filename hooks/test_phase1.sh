@@ -1,37 +1,27 @@
 #!/usr/bin/env bash
 # Test all Phase 1 hooks without running Claude Code.
 # Run from repo root: bash hooks/test_phase1.sh
-# Each test prints PASS or FAIL with the scenario name.
+#
+# Detection logic: hooks now exit 0 in all cases.
+# A dangerous command produces JSON with "permissionDecision" on stdout.
+# A safe command produces no output (or no "permissionDecision" in output).
 
 set -euo pipefail
 
 PASS=0
 FAIL=0
 
-run_hook() {
-  local hook="$1"
-  local payload="$2"
-  echo "$payload" | python3 "hooks/$hook"
-  return $?
-}
-
 assert_blocked() {
   local label="$1"
   local hook="$2"
   local payload="$3"
-  output=$(echo "$payload" | python3 "hooks/$hook" 2>/dev/null || true)
-  exit_code=$(echo "$payload" | python3 "hooks/$hook" > /dev/null 2>&1; echo $?) || true
-  exit_code=$(echo "$payload" | python3 "hooks/$hook" 2>/dev/null; echo $?)
-  # Re-run to capture exit code cleanly
-  set +e
-  echo "$payload" | python3 "hooks/$hook" > /dev/null 2>&1
-  local code=$?
-  set -e
-  if [ "$code" -ne 0 ]; then
-    echo "PASS: $label (exit $code — blocked)"
+  local output
+  output=$(echo "$payload" | python3 "hooks/$hook" 2>/dev/null)
+  if echo "$output" | grep -q '"permissionDecision"'; then
+    echo "PASS: $label (ask decision returned)"
     PASS=$((PASS + 1))
   else
-    echo "FAIL: $label (expected block, got exit 0)"
+    echo "FAIL: $label (expected permissionDecision in output, got: $output)"
     FAIL=$((FAIL + 1))
   fi
 }
@@ -40,20 +30,19 @@ assert_allowed() {
   local label="$1"
   local hook="$2"
   local payload="$3"
-  set +e
-  echo "$payload" | python3 "hooks/$hook" > /dev/null 2>&1
-  local code=$?
-  set -e
-  if [ "$code" -eq 0 ]; then
-    echo "PASS: $label (exit 0 — allowed)"
+  local output exit_code
+  exit_code=0
+  output=$(echo "$payload" | python3 "hooks/$hook" 2>/dev/null) || exit_code=$?
+  if [ "$exit_code" -eq 0 ] && ! echo "$output" | grep -q '"permissionDecision"'; then
+    echo "PASS: $label (allowed — no permission decision)"
     PASS=$((PASS + 1))
   else
-    echo "FAIL: $label (expected allow/exit 0, got exit $code)"
+    echo "FAIL: $label (expected no permissionDecision; exit=$exit_code output=$output)"
     FAIL=$((FAIL + 1))
   fi
 }
 
-echo "=== Fase 1 Hook Tests ==="
+echo "=== Phase 1 Hook Tests ==="
 echo ""
 
 # ── guard-git-push.py ────────────────────────────────────────────────────────
@@ -71,9 +60,6 @@ assert_blocked "git push origin main --force" "guard-git-push.py" \
 
 assert_allowed "git push origin main (normal push)" "guard-git-push.py" \
   '{"tool_name":"Bash","tool_input":{"command":"git push origin main"}}'
-
-assert_allowed "git push --force with AEGIS_ALLOW=1" "guard-git-push.py" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 git push --force origin main"}}'
 
 assert_allowed "non-Bash tool ignored" "guard-git-push.py" \
   '{"tool_name":"Write","tool_input":{"command":"git push --force"}}'
@@ -98,9 +84,6 @@ assert_blocked "git reset --hard (no target)" "guard-dangerous-bash.py" \
 
 assert_allowed "rm -f single-file.txt" "guard-dangerous-bash.py" \
   '{"tool_name":"Bash","tool_input":{"command":"rm -f single-file.txt"}}'
-
-assert_allowed "rm -rf with AEGIS_ALLOW=1" "guard-dangerous-bash.py" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 rm -rf ./dist"}}'
 
 assert_allowed "git reset --mixed" "guard-dangerous-bash.py" \
   '{"tool_name":"Bash","tool_input":{"command":"git reset --mixed HEAD~1"}}'

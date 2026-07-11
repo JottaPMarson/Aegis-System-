@@ -126,7 +126,7 @@ module/
 - Always run `terraform plan` before `terraform apply`. Review the plan diff carefully.
 - In CI/CD: run `plan` on PR open, run `apply` only on merge to the protected branch.
 - Use `terraform plan -out=tfplan` to save the plan and `terraform apply tfplan` to apply exactly what was reviewed.
-- `terraform destroy` is intercepted by the Aegis security hook — it requires `AEGIS_ALLOW=1` + explicit user confirmation. Use `-target=<resource>` for surgical teardown.
+- `terraform destroy` is intercepted by the Aegis security hook and triggers a user confirmation dialog — only a human can approve it. Use `-target=<resource>` for surgical teardown.
 - Enable `prevent_destroy = true` on resources that must not be accidentally deleted (databases, S3 buckets with data, production VPCs).
 
 ---

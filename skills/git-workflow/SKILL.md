@@ -21,11 +21,11 @@ Apply these rules to all git operations.
 
 ## Dangerous operations (security hook intercepts these)
 
-The aegis hooks block the following — do not bypass without explicit user confirmation:
+The aegis hooks intercept the following and open a **user confirmation dialog**:
 - `git push --force` / `git push -f` → prefer `--force-with-lease` (fails if remote has commits you haven't fetched).
 - `git reset --hard` → prefer `git stash` (recoverable) or `git reset --mixed` (unstages without losing work).
 
-To proceed after a block: add `AEGIS_ALLOW=1` before the command only after confirming the risk with the user.
+When the dialog appears, only the human user can approve or deny — the agent cannot self-approve.
 
 ## Before push checklist
 

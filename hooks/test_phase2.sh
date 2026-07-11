@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Test all Phase 2 hooks without running Claude Code.
 # Run from repo root: bash hooks/test_phase2.sh
-# Each test prints PASS or FAIL with the scenario name.
+#
+# Detection logic: hooks now exit 0 in all cases.
+# A dangerous command produces JSON with "permissionDecision" on stdout.
+# A safe command produces no output (or no "permissionDecision" in output).
 
 set -euo pipefail
 
@@ -12,15 +15,13 @@ assert_blocked() {
   local label="$1"
   local hook="$2"
   local payload="$3"
-  set +e
-  echo "$payload" | python3 "hooks/$hook" > /dev/null 2>&1
-  local code=$?
-  set -e
-  if [ "$code" -ne 0 ]; then
-    echo "PASS: $label (exit $code — blocked)"
+  local output
+  output=$(echo "$payload" | python3 "hooks/$hook" 2>/dev/null)
+  if echo "$output" | grep -q '"permissionDecision"'; then
+    echo "PASS: $label (ask decision returned)"
     PASS=$((PASS + 1))
   else
-    echo "FAIL: $label (expected block, got exit 0)"
+    echo "FAIL: $label (expected permissionDecision in output, got: $output)"
     FAIL=$((FAIL + 1))
   fi
 }
@@ -29,15 +30,14 @@ assert_allowed() {
   local label="$1"
   local hook="$2"
   local payload="$3"
-  set +e
-  echo "$payload" | python3 "hooks/$hook" > /dev/null 2>&1
-  local code=$?
-  set -e
-  if [ "$code" -eq 0 ]; then
-    echo "PASS: $label (exit 0 — allowed)"
+  local output exit_code
+  exit_code=0
+  output=$(echo "$payload" | python3 "hooks/$hook" 2>/dev/null) || exit_code=$?
+  if [ "$exit_code" -eq 0 ] && ! echo "$output" | grep -q '"permissionDecision"'; then
+    echo "PASS: $label (allowed — no permission decision)"
     PASS=$((PASS + 1))
   else
-    echo "FAIL: $label (expected allow/exit 0, got exit $code)"
+    echo "FAIL: $label (expected no permissionDecision; exit=$exit_code output=$output)"
     FAIL=$((FAIL + 1))
   fi
 }
@@ -65,9 +65,6 @@ assert_blocked "git clean -f -d" "$HOOK" \
 assert_allowed "git clean -n (dry run)" "$HOOK" \
   '{"tool_name":"Bash","tool_input":{"command":"git clean -n"}}'
 
-assert_allowed "git clean -fd with AEGIS_ALLOW=1" "$HOOK" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 git clean -fd"}}'
-
 echo ""
 
 # ── git branch -D protected ──────────────────────────────────────────────────
@@ -88,9 +85,6 @@ assert_blocked "git branch -D release/1.2.0" "$HOOK" \
 assert_allowed "git branch -D feat/my-feature" "$HOOK" \
   '{"tool_name":"Bash","tool_input":{"command":"git branch -D feat/my-feature"}}'
 
-assert_allowed "git branch -D main with AEGIS_ALLOW=1" "$HOOK" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 git branch -D main"}}'
-
 echo ""
 
 # ── terraform destroy ────────────────────────────────────────────────────────
@@ -107,9 +101,6 @@ assert_allowed "terraform plan" "$HOOK" \
 
 assert_allowed "terraform apply" "$HOOK" \
   '{"tool_name":"Bash","tool_input":{"command":"terraform apply"}}'
-
-assert_allowed "terraform destroy with AEGIS_ALLOW=1" "$HOOK" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 terraform destroy"}}'
 
 echo ""
 
@@ -128,9 +119,6 @@ assert_allowed "kubectl delete pod my-pod" "$HOOK" \
 assert_allowed "kubectl get namespace" "$HOOK" \
   '{"tool_name":"Bash","tool_input":{"command":"kubectl get namespace"}}'
 
-assert_allowed "kubectl delete namespace with AEGIS_ALLOW=1" "$HOOK" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 kubectl delete namespace staging"}}'
-
 echo ""
 
 # ── docker system prune -a ───────────────────────────────────────────────────
@@ -147,9 +135,6 @@ assert_allowed "docker system prune (no -a)" "$HOOK" \
 
 assert_allowed "docker image prune" "$HOOK" \
   '{"tool_name":"Bash","tool_input":{"command":"docker image prune"}}'
-
-assert_allowed "docker system prune -a with AEGIS_ALLOW=1" "$HOOK" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 docker system prune -a"}}'
 
 echo ""
 
@@ -171,9 +156,6 @@ assert_blocked "TRUNCATE TABLE sessions" "$HOOK" \
 assert_allowed "SELECT * FROM users" "$HOOK" \
   '{"tool_name":"Bash","tool_input":{"command":"psql -c \"SELECT * FROM users\""}}'
 
-assert_allowed "DROP TABLE with AEGIS_ALLOW=1" "$HOOK" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 psql -c \"DROP TABLE users\""}}'
-
 echo ""
 
 # ── chmod -R 777 ─────────────────────────────────────────────────────────────
@@ -190,9 +172,6 @@ assert_allowed "chmod 755 script.sh" "$HOOK" \
 
 assert_allowed "chmod -R 644 /var/www" "$HOOK" \
   '{"tool_name":"Bash","tool_input":{"command":"chmod -R 644 /var/www"}}'
-
-assert_allowed "chmod -R 777 with AEGIS_ALLOW=1" "$HOOK" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 chmod -R 777 /var/www"}}'
 
 echo ""
 
@@ -216,9 +195,6 @@ assert_blocked "git add cert.pem" "$HOOK" \
 
 assert_allowed "git add src/config.py" "$HOOK" \
   '{"tool_name":"Bash","tool_input":{"command":"git add src/config.py"}}'
-
-assert_allowed "git add .env with AEGIS_ALLOW=1" "$HOOK" \
-  '{"tool_name":"Bash","tool_input":{"command":"AEGIS_ALLOW=1 git add .env"}}'
 
 assert_allowed "non-Bash tool ignored" "$HOOK" \
   '{"tool_name":"Write","tool_input":{"command":"git clean -fd"}}'
