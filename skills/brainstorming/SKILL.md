@@ -1,3 +1,8 @@
+---
+name: brainstorming
+description: Use at the start of any non-trivial task to explore the problem space, surface trade-offs, and pick a direction before committing to implementation.
+---
+
 # Skill: Brainstorming
 
 Use at the start of any non-trivial task to explore the problem space before committing to a solution.

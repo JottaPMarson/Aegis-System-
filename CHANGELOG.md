@@ -6,9 +6,15 @@ All notable changes to Aegis are documented here. Format: [Keep a Changelog](htt
 
 ### Added
 
+- `skills/orchestrator/SKILL.md` — orchestrator methodology migrated from `CLAUDE.md`; now loaded as plugin context in any project that installs Aegis (the `CLAUDE.md` alone was never loaded when the plugin was installed)
 - `LICENSE` — PolyForm NonCommercial License 1.0.0: free for personal, research, education, and non-profit use; commercial use prohibited
 - `.github/CODEOWNERS` — @JottaPMarson declared as owner of all files and directories; GitHub auto-requests review on every PR
 - Branch protection on `main`: PR review + code owner review required, linear history, no force pushes, no deletions, conversation resolution required, signed commits required
+
+### Changed
+
+- `CLAUDE.md` — repurposed as developer guide for working on the Aegis repo itself; orchestrator methodology now lives in `skills/orchestrator/SKILL.md`
+- All 9 existing `skills/*/SKILL.md` files — added YAML frontmatter (`name` + `description`) required by `claude plugin validate --strict`
 
 ### Fixed
 

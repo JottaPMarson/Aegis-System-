@@ -1,3 +1,8 @@
+---
+name: requesting-code-review
+description: Use to dispatch code-reviewer at the right moment — after every non-trivial implementation chunk, before PR merge, and after a security review returns clear.
+---
+
 # Skill: Requesting Code Review
 
 Use to dispatch `code-reviewer` at the right moment and with the right context.

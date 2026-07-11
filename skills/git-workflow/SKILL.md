@@ -1,3 +1,8 @@
+---
+name: git-workflow
+description: Apply these commit and branch rules to all git operations, including how to handle dangerous-operation intercepts from the Aegis security hooks.
+---
+
 # Skill: Git Workflow
 
 Apply these rules to all git operations.

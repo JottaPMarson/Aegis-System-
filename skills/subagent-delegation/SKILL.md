@@ -1,3 +1,8 @@
+---
+name: subagent-delegation
+description: Use to identify the right specialist for a task chunk and compose a correctly structured Task dispatch with goal, context, rules file, and output contract.
+---
+
 # Skill: Subagent Delegation
 
 Use to decide which specialist agent to dispatch for a given task chunk.

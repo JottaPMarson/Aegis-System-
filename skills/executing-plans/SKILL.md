@@ -1,3 +1,8 @@
+---
+name: executing-plans
+description: Use once a plan is confirmed to dispatch each chunk to the right specialist and run two-stage compliance + quality review before marking it complete.
+---
+
 # Skill: Executing Plans
 
 Use once a plan is confirmed. Dispatch each chunk to the right specialist and review results before proceeding.

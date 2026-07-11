@@ -1,3 +1,8 @@
+---
+name: debugging
+description: Use when a test fails or unexpected behavior is reported: reproduce, localize via codebase navigation, form one hypothesis, verify, fix minimally, confirm no regressions.
+---
+
 # Skill: Debugging
 
 Use when a test fails, a production error is reported, or behavior doesn't match the spec.

@@ -1,3 +1,8 @@
+---
+name: writing-plans
+description: Use after brainstorming is confirmed to break non-trivial work into numbered chunks, each independently testable and scoped to one specialist.
+---
+
 # Skill: Writing Plans
 
 Use after brainstorming is complete and the approach is confirmed. Write a plan before any implementation begins.
