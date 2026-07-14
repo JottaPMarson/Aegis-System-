@@ -4,7 +4,7 @@
 
 ## What it is
 
-Aegis replaces the generic sub-agent approach with a curated team of specialists that the orchestrator (`CLAUDE.md`) plans, delegates to, and reviews. Every implementation task goes through Brainstorm → Spec → Plan → Execute with TDD enforced from the Spec step.
+Aegis replaces the generic sub-agent approach with a curated team of specialists that the orchestrator (`skills/orchestrator/SKILL.md`) plans, delegates to, and reviews. Every implementation task goes through Brainstorm → Spec → Plan → Execute with TDD enforced from the Spec step.
 
 ---
 
@@ -67,8 +67,16 @@ Three `PreToolUse` hooks intercept dangerous commands before they run and open a
 | `git push --force` / `git push -f` | `git push --force-with-lease` |
 | `git reset --hard` | `git stash` or `git reset --mixed` |
 | `rm -rf` / `rm -fr` | Move to `/tmp/` first, verify, then delete |
+| `git clean -fd` / `-fdx` / `-fX` | `git clean -n` (dry run) first |
+| `git branch -D <production-branch>` | `git branch -d` (refuses unmerged) |
+| `terraform destroy` | `terraform plan -destroy` first; use `-target` for surgical teardown |
+| `kubectl delete namespace` | Scale deployments to 0 first; back up PVCs |
+| `docker system prune -a` | `docker image prune` or `docker container prune` |
+| `DROP TABLE` / `DROP DATABASE` / `TRUNCATE` | Wrap in a transaction; dump schema first |
+| `chmod -R 777` | Use `755` for dirs, `644` for files, `600` for secrets |
+| `git add .env` / `*.pem` / `id_rsa` / secret files | Add to `.gitignore`; use a secrets manager |
 
-All attempts are logged to `~/.aegis/security-hook.log`.
+All detections are logged to `~/.aegis/security-hook.log`.
 
 ---
 
@@ -109,7 +117,7 @@ See `mcp-config/recommended-mcp.json` and `SETUP.md` for installation instructio
 
 | Phase | Description |
 |---|---|
-| 0 | Skeleton: .claude-plugin/plugin.json, CLAUDE.md, rules, skills |
+| 0 | Skeleton: .claude-plugin/plugin.json, skills/orchestrator, rules |
 | 1 | Security hooks: force-push, reset --hard, rm -rf |
 | 2 | Core sub-agents: architect, security, QA, code-reviewer, infra, DB, docs |
 | 3 | 12 language agents + base rules |

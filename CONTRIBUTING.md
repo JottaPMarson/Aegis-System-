@@ -19,7 +19,12 @@ Create `rules/database/<tech>.md` (e.g., `rules/database/mongodb.md`). The `data
 
 ## Adding a new security hook pattern
 
-Edit `rules/security/dangerous-patterns.md` (source of truth for pattern descriptions). Update the matching hook script (`hooks/guard-dangerous-bash.py` or `hooks/guard-git-push.py`) with the new regex pattern. Run `hooks/test_phase1.sh` to verify.
+Edit `rules/security/dangerous-patterns.md` (source of truth for pattern descriptions). Add the regex to the matching hook script (`hooks/guard-dangerous-bash.py`, `hooks/guard-git-push.py`, or `hooks/guard-phase2.py`). Add test cases to the corresponding test script and run both suites to verify:
+
+```bash
+bash hooks/test_phase1.sh
+bash hooks/test_phase2.sh
+```
 
 ## Adding a new slash command
 
